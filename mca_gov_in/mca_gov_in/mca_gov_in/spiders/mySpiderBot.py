@@ -17,9 +17,11 @@ class MyspiderbotSpider(scrapy.Spider):
     start_urls = ['http://mca.gov.in/mcafoportal/companiesRegReport.do']
     errorFileName="error.log"
     dataFileName="Company_Registered_in_Last_30days_"+datetime.datetime.now().strftime("%d_%m_%h")+".xlsx"
-    dataFileLocation="/home/digiapt/Desktop/mca_gov_in/mca_gov_in/spiders/fetchedFile/"+dataFileName
+    dataFileLocation="/home/digiapt/Desktop/mca_gov_in/mca_gov_in/mca_gov_in/spiders/fetchedFile/"+dataFileName
     successFileName="success.log"
-    
+    successFileLocation="/home/digiapt/Desktop/mca_gov_in/mca_gov_in/mca_gov_in/spiders/"+successFileName
+    errorFileName="error.log"
+    errorFileLocation="/home/digiapt/Desktop/mca_gov_in/mca_gov_in/mca_gov_in/spiders/"+errorFileName
     schemaColumns={
         "COMPANY NAME":"name",
         "LIMITED LIABILITY PARTNERSHIP NAME":"name",
@@ -43,8 +45,8 @@ class MyspiderbotSpider(scrapy.Spider):
         "NUMBER OF PARTNERS":"numberOfPartners",
         "NUMBER OF MEMBERS (Applicable only in case of Co. without share Capital)":"numberOfPartners",
         "NUMBER OF DESIGNATED PARTNERS":"numberOfDesignatedParters",
-        "ACTIVITY DESCRIPTION":"activityDiscription",
-        "ACTIVITY_DESCRIPTION":"activityDiscription",
+        "ACTIVITY DESCRIPTION":"activityDescription",
+        "ACTIVITY_DESCRIPTION":"activityDescription",
         "REGISTERED_OFFICE_ADDRESS":"officeAddressInIndia",
         "FOREIGN COMPANY PRESENT ADDRESS IN INDIA":"officeAddressInIndia",
         "FOREIGN OFFICE ADDRESS":"officeAddressInForeign",
@@ -64,15 +66,15 @@ class MyspiderbotSpider(scrapy.Spider):
         "paidCapital":0,
         "numberOfPartners":0,
         "numberOfDesignatedParters":0,
-        "activityDiscription":0,
+        "activityDescription":0,
         "officeAddressInIndia":0,
         "officeAddressInForeign":0,
         "totalObligationOfContribution":0,
         "typeOfOffice":0
         }
 
-    def createDataList(self,df,sheet,dataList,sheetOne,sheetTwo,sheetThree,sheetFour):
-        if sheet==sheetOne: #"Indian Companies Registered"
+    def createDataList(self,df,sheet,dataList,sheetOne,sheetTwo,sheetThree,sheetFour,meta):
+        if sheet == "Indian Companies Registered": #"Indian Companies Registered"
             columns=df.columns.values
             entity={}
             incorporationData={}
@@ -80,38 +82,32 @@ class MyspiderbotSpider(scrapy.Spider):
             registrationData={"registrationData":"null"}
             commonCol={}
             for col in columns:
-                commonCol[self.schemaColumns[col]]=0
+                    commonCol[self.schemaColumns[col]]=0
             for index in range(df.shape[0]):
                 tmp={}
                 tmp1={}
                 tmp2={}
                 tmp3={}
                 #tmp['isCompany']=True;tmp['isLLP']=False;tmp['isForeign']=False;tmp['isDomestic']=True;tmp['identityLabel']="CIN"
+                tmp['country']="India"
                 tmp1['isCompany']=True;tmp1['isLLP']=False;tmp1['isForeign']=False;tmp1['isDomestic']=True;
                 tmp1['identityLabel']="CIN"
                 tmp1['type']="incorporation"
                 row=df.iloc[index]
                 for col in columns:
-                    if col=="COMPANY NAME" or  col == "ACTIVITY_DESCRIPTION" or col=="ROC" or col=="STATE" or col == "CIN" or col == "DATE OF INCORPORATION" or col == "REGISTERED_OFFICE_ADDRESS" :
-                        #tmp[schemaColumns[col]]=row[col] if row[col] is not pd.np.nan else "null"
+                    tmp['ROC']=row['ROC']
+                    tmp['STATE']=row['STATE']
+                    tmp1['vehicle']="company"
+                    if col=="COMPANY NAME" or  col == "ACTIVITY_DESCRIPTION" or col == "CIN" or col == "DATE OF INCORPORATION" or col == "REGISTERED_OFFICE_ADDRESS" :
+                        #tmp[schemaColumns[col]]=row[col] if row[col]==not pd.np.nan else "null"
                         tmp1[self.schemaColumns[col]]=row[col] if row[col] is not pd.np.nan else "null"
-                    elif col == "CATEGORY" or col == "SUB CATEGORY" or col == "CLASS" or col == "AUTHORIZED_CAPITAL" or col == "PAID CAPITAL" or col is "NUMBER OF MEMBERS":
+                    elif col == "CATEGORY" or col == "SUB CATEGORY" or col == "CLASS" or col == "AUTHORIZED_CAPITAL" or col == "PAID CAPITAL" or col=="NUMBER OF MEMBERS":
                         tmp2[self.schemaColumns[col]]=row[col] if row[col] is not pd.np.nan else "null"
             
-                for unInsertedKey in self.schema2sheet.keys():
-                    if unInsertedKey not in commonCol:
-                        #tmp[unInsertedKey]="null"
-                        tmp3[unInsertedKey]="null"
                 entity['entity']=tmp1
                 incorporationData['incorporationData']=tmp2
-                emptyField['emptyField']=tmp3
-                tmp={**entity,**incorporationData,**emptyField,**registrationData}
+                tmp={**tmp,**entity,**incorporationData,**registrationData,**meta}
                 dataList.append(tmp)
-            
-            
-            
-            
-            
         
         elif sheet==sheetTwo: #Foreign Companies Registered
             columns=df.columns.values
@@ -127,6 +123,7 @@ class MyspiderbotSpider(scrapy.Spider):
                 tmp1={}
                 tmp2={}
                 tmp3={}
+                tmp['country']="India"
                 tmp1['isCompany']=True;tmp1['isLLP']=False;tmp1['isForeign']=True;tmp1['isDomestic']=False;
                 tmp1['identityLabel']="FCRN"
                 tmp1['type']="registration"
@@ -134,67 +131,98 @@ class MyspiderbotSpider(scrapy.Spider):
                 tmp['isCompany']=True;tmp['isLLP']=False;tmp['isForeign']=True;tmp['isDomestic']=False;tmp['identityLabel']="FCRN"
                 row=df.iloc[index]
                 for col in columns:
-                    if col=="COMPANY NAME" or col == "ACTIVITY_DESCRIPTION" or col=="STATE" or col=="ROC" or col == "FCRN" or col == "DATE OF REGISTRATION" or  col =="FOREIGN COMPANY PRESENT ADDRESS IN INDIA" or col == "REGISTERED_OFFICE_ADDRESS" :
-                        #tmp[schemaColumns[col]]=row[col] if row[col] is not pd.np.nan else "null"
+                    tmp['ROC']=row['ROC']
+                    tmp['STATE']=row['STATE']
+                    if col=="COMPANY NAME" or col == "ACTIVITY_DESCRIPTION" or col == "FCRN" or col == "DATE OF REGISTRATION" or  col =="FOREIGN COMPANY PRESENT ADDRESS IN INDIA" or col == "REGISTERED_OFFICE_ADDRESS" :
+                        #tmp[schemaColumns[col]]=row[col] if row[col]==not pd.np.nan else "null"
                         tmp1[self.schemaColumns[col]]=row[col] if row[col] is not pd.np.nan else "null"
                     elif col == "TYPE OF OFFICE" or col == "COUNTRY OF INCORPORATION" or col == "FOREIGN OFFICE ADDRESS":
-                        tmp2[self.schemaColumns[col]]=row[col] if row[col] is not pd.np.nan else "null"
+                        tmp2[self.schemaColumns[col]]=row[col] if row[col]is not pd.np.nan else "null"
                 
-                    #tmp[schemaColumns[col]]=row[col] if row[col] is not pd.np.nan else "null"
+                    #tmp[schemaColumns[col]]=row[col] if row[col]==not pd.np.nan else "null"
                 
-                
-                for unInsertedKey in self.schema2sheet.keys():
-                    if unInsertedKey not in commonCol:
-                        #tmp[unInsertedKey]="null"
-                        tmp3[unInsertedKey]="null"
                 entity['entity']=tmp1
                 registrationData['registrationData']=tmp2
                 emptyField['emptyField']=tmp3
-                tmp={**entity,**registrationData,**incorporationData,**emptyField}
+                tmp={**tmp,**entity,**registrationData,**incorporationData,**emptyField,**meta}
                 dataList.append(tmp)
             
         elif sheet==sheetThree: #LLP Registered
             columns=df.columns.values
+            entity={}
+            incorporationData={}
+            emptyField={}
+            registrationData={"registrationData":"null"}
             commonCol={}
             for col in columns:
-                    commonCol[self.schemaColumns[col]]=0
+                commonCol[self.schemaColumns[col]]=0
             for index in range(df.shape[0]):
                 tmp={}
-                tmp['isCompany']=False;tmp['isLLP']=True;tmp['vehicle']="LLP";tmp['isForeign']=False;tmp['isDomestic']=True;tmp['identityLabel']="LLPIN"
+                tmp1={}
+                tmp2={}
+                tmp3={}
+                #tmp['isCompany']=True;tmp['isLLP']=False;tmp['isForeign']=False;tmp['isDomestic']=True;tmp['identityLabel']="CIN"
+                tmp['country']="India"
+                tmp1['isCompany']=False;tmp1['isLLP']=True;tmp1['isForeign']=False;tmp1['isDomestic']=True;
+                tmp1['identityLabel']="LLPIN"
+                tmp1['type']="registration"
                 row=df.iloc[index]
                 for col in columns:
-                    tmp[self.schemaColumns[col]]=row[col] if row[col] is not pd.np.nan else "null"
-                for unInsertedKey in self.schema2sheet.keys():
-                    if unInsertedKey not in commonCol:
-                        tmp[unInsertedKey]="null"
-                dataList.append(tmp)        
+                    tmp['ROC']=row['ROC']
+                    tmp['STATE']=row['STATE']
+                    tmp1['vehicle'] = "LLP"
+                    if col=="LIMITED LIABILITY PARTNERSHIP NAME" or  col == "ACTIVITY_DESCRIPTION" or col == "LLPIN" or col == "DATE OF INCORPORATION" or col == "REGISTERED_OFFICE_ADDRESS" :
+                        #tmp[schemaColumns[col]]=row[col] if row[col]==not pd.np.nan else "null"
+                        tmp1[self.schemaColumns[col]]=row[col] if row[col] is not pd.np.nan else "null"
+                    elif col == "TOTAL OBLIGATION OF CONTRIBUTION" or col=="NUMBER OF PARTNERS" or col=="NUMBER OF DESIGNATED PARTNERS":
+                        tmp2[self.schemaColumns[col]]=row[col] if row[col] is not pd.np.nan else "null"
+            
+                entity['entity']=tmp1
+                incorporationData['incorporationData']=tmp2
+                tmp={**tmp,**entity,**incorporationData,**registrationData,**meta}
+                dataList.append(tmp)
+
         
         elif sheet==sheetFour: #Foreign LLP Registered
             columns=df.columns.values
+            entity={}
+            incorporationData={"incorporationData":"null"}
+            emptyField={}
+            registrationData={}
             commonCol={}
             for col in columns:
                     commonCol[self.schemaColumns[col]]=0
-            for index in range(df.shape[0]):
-                tmp={}
-                tmp['isCompany']=False;tmp['isLLP']=True;tmp['LLP']="company";tmp['isForeign']=True;tmp['isDomestic']=False;tmp['identityLabel']="FLLPIN"
-                try:
+            try:
+                for index in range(df.shape[0]):
+                    tmp={}
+                    tmp1={}
+                    tmp2={}
+                    tmp3={}
+                    #tmp['isCompany']=True;tmp['isLLP']=False;tmp['isForeign']=False;tmp['isDomestic']=True;tmp['identityLabel']="CIN"
+                    tmp['country']="India"
+                    tmp1['isCompany']=False;tmp1['isLLP']=True;tmp1['isForeign']=True;tmp1['isDomestic']=False;
+                    tmp1['identityLabel']="FLLPIN"
+                    tmp1['type']="registration"
                     row=df.iloc[index]
                     for col in columns:
-                        tmp[self.schemaColumns[col]]=row[col] if row[col] is not pd.np.nan else "null"
-                    for unInsertedKey in self.schema2sheet.keys():
-                        if unInsertedKey not in commonCol:
-                            tmp[unInsertedKey]="null"
+                        tmp['ROC']=row['ROC']
+                        tmp['STATE OF PRINCIPAL PLACE OF BUSINESS IN INDIA']=row['STATE'] if row['STATE'] is not pd.np.nan else "null"
+                        tmp1['vehicle'] = "LLP"
+                        if col=="FOREIGN LIMITED LIABILITY PARTNERSHIP" or  col == "ACTIVITY_DESCRIPTION" or col == "FLLPIN" or col == "DATE OF REGISTRATION" or col == "FOREIGN COMPANY PRESENT ADDRESS IN INDIA" :
+                            #tmp[schemaColumns[col]]=row[col] if row[col]==not pd.np.nan else "null"
+                            tmp1[self.schemaColumns[col]]=row[col] if row[col] is not pd.np.nan else "null"
+                        elif col=="TYPE OF OFFICE" or col=="COUNTRY OF INCORPORATION" or col=="FOREIGN OFFICE ADDRESS":
+                            tmp2[self.schemaColumns[col]]=row[col] if row[col] is not pd.np.nan else "null"
+            
+                    entity['entity']=tmp1
+                    registrationData['registrationData']=tmp2
+                    tmp={**tmp,**entity,**incorporationData,**registrationData,**meta}
                     dataList.append(tmp)
-                except Exception as e:
-                    pass
+
+            except Exception as e:
+                pass
         return dataList
     
-    
-    
-    
-    def readAndInsert(self,fileLocation):
-        excelFile=pd.ExcelFile(fileLocation)
-
     def errorback(self,res):
         with open(self.errorFileName,"a") as fp:
             fp.write(datetime.datetime.now().strftime("%d-%m-%h (%H:%M:%S)")+" - "+str(res)+"\r\n")
@@ -211,27 +239,26 @@ class MyspiderbotSpider(scrapy.Spider):
         sheetTwo="Foreign Companies Registered"
         sheetThree="LLP Registered"
         sheetFour="Foreign LLP Registered"
-        for sheet in ["Indian Companies Registered","Foreign Companies Registered"]:
+        meta={"meta":{}}
+        meta['meta']["dateCreated"]=datetime.datetime.now().strftime("%d/%m/%y")
+        meta['meta']["source"]="http://mca.gov.in"
+        meta['meta']["sourceURL"]="http://mca.gov.in/mcafoportal/companiesRegReport.do"
+        for sheet in excelFile.sheet_names:
             df=pd.read_excel(excelFile,sheet_name=sheet)
             df.columns=df.iloc[0]
             df.drop(0,inplace=True)
-            dataList=self.createDataList(df,sheet,dataList,sheetOne,sheetTwo,sheetThree,sheetFour)
-        meta={}
-        meta["dateCreated"]=datetime.datetime.now().strftime("%d/%m/%y")
-        meta["source"]="http://mca.gov.in"
-        meta["sourceURL"]="http://mca.gov.in/mcafoportal/companiesRegReport.do"
-        dataList.append({"metaData":meta})
+            dataList=self.createDataList(df,sheet,dataList,sheetOne,sheetTwo,sheetThree,sheetFour,meta)
         mongoClient=MongoClient()
         db=mongoClient.mcaGovIn
         collection=db.companies
         
         try:
             collection.insert_many(dataList)
-            with open(self.successFileName,"a") as fp:
+            with open(self.successFileLocation,"a") as fp:
                 fp.write(datetime.datetime.now().strftime("%d-%m-%h (%H:%M:%S)")+" - "+" Insertion Successful, Successfully Crawled"+"\r\n")
             print("**********************************Successfully Crawled*******************************************")
         except Exception as e:
-            with open(self.errorFileName,"a") as fp:
+            with open(self.errorFileLocation,"a") as fp:
                 fp.write(datetime.datetime.now().strftime("%d-%m-%h (%H:%M:%S)")+" - "+" Insertion Failed: - "+str(e)+"\r\n")
             print("**********************************Insertion Failed, Please check error log for more information*******************************************")
         
