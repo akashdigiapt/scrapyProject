@@ -13,6 +13,7 @@ import numpy as np
 class MyspiderbotSpider(scrapy.Spider):
         
     name = 'mySpiderBot'
+    a="gg"
     allowed_domains = ['http://mca.gov.in']
     start_urls = ['http://mca.gov.in/mcafoportal/companiesRegReport.do']
     errorFileName="error.log"
