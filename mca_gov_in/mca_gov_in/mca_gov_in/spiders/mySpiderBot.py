@@ -3,8 +3,6 @@ import scrapy
 import pandas as pd
 import sys
 import os
-import seaborn as sns
-import matplotlib.pyplot as plt
 from pymongo import MongoClient
 import json
 import datetime
@@ -13,16 +11,16 @@ import numpy as np
 class MyspiderbotSpider(scrapy.Spider):
         
     name = 'mySpiderBot'
-    a="gg"
+    baseAddress="/home/akash/wizardProjects/scrapyProject/mca_gov_in/mca_gov_in/mca_gov_in/spiders"
     allowed_domains = ['http://mca.gov.in']
     start_urls = ['http://mca.gov.in/mcafoportal/companiesRegReport.do']
     errorFileName="error.log"
     dataFileName="Company_Registered_in_Last_30days_"+datetime.datetime.now().strftime("%d_%m_%h")+".xlsx"
-    dataFileLocation="/home/digiapt/Desktop/mca_gov_in/mca_gov_in/mca_gov_in/spiders/fetchedFile/"+dataFileName
+    dataFileLocation=baseAddress+"/fetchedFile/"+dataFileName
     successFileName="success.log"
-    successFileLocation="/home/digiapt/Desktop/mca_gov_in/mca_gov_in/mca_gov_in/spiders/"+successFileName
+    successFileLocation=baseAddress+"/"+successFileName
     errorFileName="error.log"
-    errorFileLocation="/home/digiapt/Desktop/mca_gov_in/mca_gov_in/mca_gov_in/spiders/"+errorFileName
+    errorFileLocation=baseAddress+"/"+errorFileName
     schemaColumns={
         "COMPANY NAME":"name",
         "LIMITED LIABILITY PARTNERSHIP NAME":"name",

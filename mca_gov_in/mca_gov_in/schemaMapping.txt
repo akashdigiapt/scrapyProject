@@ -1,0 +1,128 @@
+schema.country = "India"
+schema.state = sheetOne.STATE
+schema.ROC = sheetOne.ROC
+
+schema.entity.name = sheetOne.COMPANY NAME
+schema.entity.activityDescription = sheetOne.ACTIVITY_DESCRIPTION
+schema.entity.type = "incorporation"
+schema.entity.isDomestic = True
+schema.entity.isForeign = False
+schema.entity.vehicle = "company"
+schema.entity.identityLabel = "CIN"
+schema.entity.identityNumber = sheetOne.CIN
+schema.entity.creationdate = sheetOne.DATE OF INCORPORATION
+schema.entity.address = sheetOne.REGISTERED_OFFICE_ADDRESS
+
+schema.incorporationData.category = sheetOne.CATEGORY
+schema.incorporationData.subCategory = sheetOne.SUB CATEGORY
+schema.incorporationData.class = sheetOne.CLASS
+schema.incorporationData.authorizedCapital = sheetOne.AUTHORIZED_CAPITAL
+schema.incorporationData.paidCapital = sheetOne.PAID CAPITAL
+schema.incorporationData.numberOfMembers = sheetOne.NUMBER OF MEMBERS
+
+schema.registrationData = null
+
+schema.meta.dateCreated = NOW()
+schema.meta.source = "http://mca.gov.in"
+schema.meta.sourceURL = "http://mca.gov.in/mcafoportal/companiesRegReport.do"
+
+----------------------endOfSheetOne--------------------------------------------
+
+-------------------beginningOfSheetTwo--------------------------------
+
+schema.country = "India"
+schema.state = sheetTwo.STATE
+schema.ROC = sheetTwo.ROC
+
+schema.entity.name = sheetTwo.COMPANY NAME
+schema.entity.activityDescription = sheetTwo.ACTIVITY_DESCRIPTION
+schema.entity.type = "registration"
+schema.entity.isDomestic = False
+schema.entity.isForeign = True
+schema.entity.vehicle = "company"
+schema.entity.identityLabel = "FCRN"
+schema.entity.identityNumber = sheetTwo.FCRN
+schema.entity.creationdate = sheetTwo.DATE OF REGISTRATION
+schema.entity.address = sheetTwo.FOREIGN COMPANY PRESENT ADDRESS IN INDIA
+
+schema.incorporationData = null
+
+schema.registrationData.officeType = sheetTwo.TYPE OF OFFICE
+schema.registrationData.country = sheetTwo.COUNTRY OF INCORPORATION
+schema.registrationData.address = sheetTwo.FOREIGN OFFICE ADDRESS
+
+schema.dateCreated = NOW()
+schema.source = "http://mca.gov.in"
+schema.sourceURL = "http://mca.gov.in/mcafoportal/companiesRegReport.do"
+
+----------------------endOfSheetTwo---------------------------------------------
+
+
+------------------------------beginningOfSheetThree-------------------------
+
+schema.country = "India"
+schema.state = sheetOne.STATE
+schema.ROC = sheetOne.ROC
+
+schema.entity.name = sheetOne.LIMITED LIABILITY PARTNERSHIP NAME
+schema.entity.activityDescription = sheetOne.ACTIVITY_DESCRIPTION
+schema.entity.type = "registration"
+schema.entity.isDomestic = True
+schema.entity.isForeign = False
+schema.entity.vehicle = "LLP"
+schema.entity.identityLabel = "LLPIN"
+schema.entity.identityNumber = sheetOne.LLPIN
+schema.entity.creationdate = sheetOne.DATE OF INCORPORATION
+schema.entity.address = sheetOne.REGISTERED_OFFICE_ADDRESS
+
+
+schema.incorporationData.totalObligationOfContribution = sheetOne.TOTAL OBLIGATION OF CONTRIBUTION
+schema.incorporationData.numberOfMembers = sheetOne.NUMBER OF PARTNERS
+schema.incorporationData.numberOfDesignatedPartners = sheetOne.NUMBER OF DESIGNATED PARTNERS
+
+
+schema.registrationData = null
+
+schema.meta.dateCreated = NOW()
+schema.meta.source = "http://mca.gov.in"
+schema.meta.sourceURL = "http://mca.gov.in/mcafoportal/companiesRegReport.do"
+
+
+----------------------------endOfSheetThree----------------------------------
+
+
+
+
+--------------------------------beginningOfSheetFour------------------------------
+
+
+schema.country = "India"
+schema.state = sheetTwo.STATE OF PRINCIPAL PLACE OF BUSINESS IN INDIA
+schema.ROC = sheetTwo.ROC
+
+schema.entity.name = sheetTwo.FOREIGN LIMITED LIABILITY PARTNERSHIP
+schema.entity.activityDescription = sheetTwo.ACTIVITY_DESCRIPTION
+schema.entity.type = "registration"
+schema.entity.isDomestic = False
+schema.entity.isForeign = True
+schema.entity.vehicle = "LLP"
+schema.entity.identityLabel = "FLLPIN"
+schema.entity.identityNumber = sheetTwo.FLLPIN
+schema.entity.creationdate = sheetTwo.DATE OF REGISTRATION
+schema.entity.address = sheetTwo.FOREIGN COMPANY PRESENT ADDRESS IN INDIA
+
+schema.incorporationData = null
+
+schema.registrationData.officeType = sheetTwo.TYPE OF OFFICE
+schema.registrationData.address = sheetTwo.COUNTRY OF INCORPORATION
+schema.registrationData.address = sheetTwo.FOREIGN OFFICE ADDRESS
+
+schema.dateCreated = NOW()
+schema.source = "http://mca.gov.in"
+schema.sourceURL = "http://mca.gov.in/mcafoportal/companiesRegReport.do"
+
+----------------------endOfSheetFour---------------------------------------------
+
+
+
+
